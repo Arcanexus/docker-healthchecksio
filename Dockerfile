@@ -17,7 +17,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 FROM python:3.12-alpine
 
 # Copy only the necessary files from the build stage
-COPY --from=build /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=build /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
 COPY --from=build /usr/local/bin /usr/local/bin
 
 # Set work directory
