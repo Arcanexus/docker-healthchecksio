@@ -11,7 +11,7 @@ WORKDIR /app
 COPY src/requirements.txt .
 
 # Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -U pip && pip install --no-cache-dir -r requirements.txt
 
 # Stage 2: Run stage
 FROM python:3.12-alpine
