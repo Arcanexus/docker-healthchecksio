@@ -32,14 +32,14 @@ services:
 ```bash
 docker run -d --name docker-healthchecksio \
     -v /path/to/config.yml:/app/config/config.yml \
-    ghcr.io/arcanexus/docker-healthchecksio:latest
+    ghcr.io/arcanexus/docker-healthchecksio:main
 ```
 
 #### Use a directory containing multiple YAML config files
 ```bash
 docker run -d --name docker-healthchecksio \
     -v /path/to/dir/containing/config/files/:/app/config/ \
-    ghcr.io/arcanexus/docker-healthchecksio:latest
+    ghcr.io/arcanexus/docker-healthchecksio:main
 ```
 
 ### Using Helm chart (beta)

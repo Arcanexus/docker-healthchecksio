@@ -1,5 +1,5 @@
 # Stage 1: Build stage
-FROM python:3.11-alpine AS build
+FROM python:3.12-alpine AS build
 
 # Install build dependencies
 RUN apk add --no-cache gcc musl-dev libffi-dev openssl-dev
@@ -14,7 +14,7 @@ COPY src/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Stage 2: Run stage
-FROM python:3.11-alpine
+FROM python:3.12-alpine
 
 # Copy only the necessary files from the build stage
 COPY --from=build /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
