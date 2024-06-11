@@ -8,7 +8,7 @@ RUN apk add --no-cache gcc musl-dev libffi-dev openssl-dev
 WORKDIR /app
 
 # Copy requirements.txt
-COPY requirements.txt .
+COPY src/requirements.txt .
 
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
@@ -24,7 +24,8 @@ COPY --from=build /usr/local/bin /usr/local/bin
 WORKDIR /app
 
 # Copy the source code
-COPY src/main.py ./src/main.py
+COPY src/main.py ./main.py
+COPY src/config ./config
 
 # Command to run the script
-CMD ["python", "src/main.py"]
+CMD ["python", "main.py -c /app/config/"]

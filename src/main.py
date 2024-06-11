@@ -17,12 +17,12 @@ def read_yaml_file(file_path):
 
 # Function to read all YAML files from a directory
 def read_yaml_directory(dir_path):
-    config = {'items': []}
+    config = {'services': []}
     for file_name in os.listdir(dir_path):
         if file_name.endswith('.yml') or file_name.endswith('.yaml'):
             file_path = os.path.join(dir_path, file_name)
             file_config = read_yaml_file(file_path)
-            config['items'].extend(file_config.get('services', []))
+            config['services'].extend(file_config.get('services', []))
     return config
 
 # Function to determine if a path is a file or directory and read config
@@ -54,7 +54,12 @@ def send_monitoring_request(monitoring_url):
 # Main function to perform the checks every minute
 def main(config_path):
     while True:
-        config = read_config(config_path)
+        try:
+          config = read_config(config_path)
+        except:
+          print("Invalid config file or directory : " + config_path)
+          parser.print_help()
+          exit(1)
         current_datetime = get_formatted_datetime()
         for item in config['services']:
             name = item['name']
@@ -73,8 +78,11 @@ def main(config_path):
 
 # Entry point
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Service health checker.")
-    parser.add_argument('-c', '--config', type=str, default='./config', help='Path to the config file or directory')
+    current_file_path = os.path.abspath(__file__)
+    current_dir = os.path.dirname(current_file_path)
+
+    parser = argparse.ArgumentParser(description="Service health checker for healthchecks.io.",epilog="Arcanexus - Under Licence GPLv3")
+    parser.add_argument('-c', '--config', type=str, default=current_dir + '/config', help='Path to the config file or directory')
     args = parser.parse_args()
     
     config_path = args.config
