@@ -1,4 +1,4 @@
-import os
+import os, sys
 import time
 import yaml
 import requests
@@ -38,9 +38,11 @@ def read_config(path):
 def check_service(service_url):
     try:
         response = requests.get(service_url, allow_redirects=True)
-        return response.status_code == 200
+        # return response.status_code == 200
+        return response
     except requests.RequestException as e:
-        print(f"Error checking service {service_url}: {e}")
+        current_datetime = get_formatted_datetime()
+        print(f"{current_datetime} - [ERROR] - Error checking service {service_url}: {e}")
         return False
 
 # Function to send an HTTP POST request to the monitoring URL
@@ -49,31 +51,43 @@ def send_monitoring_request(monitoring_url):
         response = requests.post(monitoring_url)
         # print(f"Sent POST request to {monitoring_url}, response status: {response.status_code}")
     except requests.RequestException as e:
-        print(f"Error sending POST request to {monitoring_url}: {e}")
+        current_datetime = get_formatted_datetime()
+        print(f"{current_datetime} - [ERROR] - Error sending POST request to {monitoring_url}: {e}")
 
 # Main function to perform the checks every minute
 def main(config_path):
     while True:
         try:
-          config = read_config(config_path)
+            config = read_config(config_path)
         except:
-          print("Invalid config file or directory : " + config_path)
-          parser.print_help()
-          exit(1)
+            print(f"{current_datetime} - [ERROR] - Invalid config file or directory : " + config_path)
+            parser.print_help()
+            exit(1)
         current_datetime = get_formatted_datetime()
+        if args.debug:
+            print(f"{current_datetime} - [DEBUG] - Reloading config :")
+            print('\n{:#^80s}'.format(" BEGINNING "))
+            yaml.dump(config, sys.stdout, default_flow_style=False)
+            print('{:#^80s}\n'.format(" END "))
         for item in config['services']:
             name = item['name']
             service_url = item['service_url']
             monitoring_url = item['healthchecks_io_monitoring_url']
             
-            # print(f"Checking service: {name}")
-            if check_service(service_url):
-                print(f"{current_datetime} - Service {name:<10} UP   at {service_url}")
+            if args.debug:
+                print(f"{current_datetime} - [DEBUG] - Checking {name} at {service_url} for {monitoring_url}")
+            res = check_service(service_url)
+            if args.debug:
+                    print(f"{current_datetime} - [DEBUG] - HTTP Code {res.status_code} - {res.reason}")
+            if res.ok:
+                print(f"{current_datetime} - [INFO ] - Service {name:<10} UP   at {service_url}")
                 send_monitoring_request(monitoring_url)
             else:
-                print(f"{current_datetime} - Service {name:<10} DOWN at {service_url}")
+                print(f"{current_datetime} - [ERROR] - Service {name:<10} DOWN at {service_url}")
                 send_monitoring_request(monitoring_url + "/fail")
         
+        if args.debug:
+            print(f"{current_datetime} - [DEBUG] - Sleeping 60 seconds ...")
         time.sleep(60)  # Wait for 1 minute before the next check
 
 # Entry point
@@ -83,6 +97,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Service health checker for healthchecks.io.",epilog="Arcanexus - Under Licence GPLv3")
     parser.add_argument('-c', '--config', type=str, default=current_dir + '/config', help='Path to the config file or directory')
+    parser.add_argument('-d', '--debug', action='store_true', help='Enable debug mode')
     args = parser.parse_args()
     
     config_path = args.config

@@ -28,4 +28,4 @@ COPY src/main.py ./main.py
 COPY src/config ./config
 
 # Command to run the script
-CMD ["python", "main.py"]
+CMD ["python", "-u", "main.py"]
