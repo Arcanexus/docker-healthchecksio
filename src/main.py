@@ -64,7 +64,7 @@ def main(config_path):
             print(f"{current_datetime} - [ERROR] - Invalid config file or directory : " + config_path)
             parser.print_help()
             exit(1)
-        if args.debug:
+        if debug:
             print(f"{current_datetime} - [DEBUG] - Reloading config :")
             print('\n{:#^80s}'.format(" BEGINNING "))
             yaml.dump(config, sys.stdout, default_flow_style=False)
@@ -74,10 +74,10 @@ def main(config_path):
             service_url = item['service_url']
             monitoring_url = item['healthchecks_io_monitoring_url']
             
-            if args.debug:
+            if debug:
                 print(f"{current_datetime} - [DEBUG] - Checking {name} at {service_url} for {monitoring_url}")
             res = check_service(service_url)
-            if args.debug:
+            if debug:
                     print(f"{current_datetime} - [DEBUG] - HTTP Code {res.status_code} - {res.reason}")
             if res.ok:
                 print(f"{current_datetime} - [INFO ] - Service {name:<10} UP   at {service_url}")
@@ -86,7 +86,7 @@ def main(config_path):
                 print(f"{current_datetime} - [ERROR] - Service {name:<10} DOWN at {service_url}")
                 send_monitoring_request(monitoring_url + "/fail")
         
-        if args.debug:
+        if debug:
             print(f"{current_datetime} - [DEBUG] - Sleeping 60 seconds ...")
         time.sleep(60)  # Wait for 1 minute before the next check
 
@@ -94,11 +94,19 @@ def main(config_path):
 if __name__ == "__main__":
     current_file_path = os.path.abspath(__file__)
     current_dir = os.path.dirname(current_file_path)
-
+    
+    current_datetime = get_formatted_datetime()
+    
     parser = argparse.ArgumentParser(description="Service health checker for healthchecks.io.",epilog="Arcanexus - Under Licence GPLv3")
     parser.add_argument('-c', '--config', type=str, default=current_dir + '/config', help='Path to the config file or directory')
     parser.add_argument('-d', '--debug', action='store_true', help='Enable debug mode')
     args = parser.parse_args()
     
     config_path = args.config
+    if args.debug or os.getenv('DEBUG', 'false').lower() == 'true':
+        debug = True
+        print(f"{current_datetime} - [DEBUG] - Debug Mode ON")
+    else:
+        debug = False
+    
     main(config_path)

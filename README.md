@@ -20,6 +20,7 @@ services:
     healthchecks_io_monitoring_url: "https://hc-ping.com/12345678-9abc-defg-hijk-zzzzzzzzzzz"
 
 ```
+Each service is defined by :
 |   |   |
 |---|---|
 |name                             |Name of the service (for logging purpose)                    |
@@ -27,6 +28,11 @@ services:
 |healthchecks_io_monitoring_url   |URL of the healthchecks.io check associated to the service ([documentation](https://healthchecks.io/docs/http_api/#success-uuid))  |
 
 ## Usage
+
+:information_source: : DEBUG Mode can be activated using either :
+- **-d, --debug** option in command line
+- **DEBUG** environment variable set to `true`
+
 ### Using Docker
 #### Use a single YAML config file
 ```bash
@@ -43,13 +49,21 @@ docker run -d --name docker-healthchecksio \
 ```
 
 ### Using Helm chart (beta)
-An example Helm chart is available in the helm directory.
+:construction: An example Helm chart is available in the helm directory. 
 
 ### Run Python directly
 
 #### Prerequisites
 - Python 3
 - PIP
+
+#### Available options
+```bash
+options:
+  -h, --help                             show this help message and exit
+  -c CONFIG, --config CONFIG             Path to the config file or directory
+  -d, --debug                            Enable debug mode
+```
 
 #### Use a single YAML config file
 
