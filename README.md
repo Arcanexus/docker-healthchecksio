@@ -49,7 +49,15 @@ docker run -d --name docker-healthchecksio \
 ```
 
 ### Using Helm chart (beta)
-:construction: An example Helm chart is available in the helm directory. 
+:construction: An example Helm chart is available in the `helm` directory. 
+
+Customize the `values.yaml` file according to your needs.
+
+:warning: The chart currently uses a NFS share to mount the config directory.
+
+```bash
+helm upgrade monitoring-healthckecksio ./helm/ -i
+```
 
 ### Run Python directly
 

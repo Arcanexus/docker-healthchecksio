@@ -1,0 +1,25 @@
+namespace:
+  name: 
+
+security:
+  runAsUser: 0
+  runAsGroup: 0
+
+volumes:
+  healthckecksioconfig:
+    name: config
+    server: 192.168.2.50
+    path: /path/to/dir/containing/config/files/
+    containerMountPath: /app/config/
+
+pods:
+  healthckecksio:
+    image: ghcr.io/arcanexus/docker-healthchecksio:latest
+    replicas: 1
+    debug: "false"
+    tz: "Europe/Paris"
+
+
+
+
+

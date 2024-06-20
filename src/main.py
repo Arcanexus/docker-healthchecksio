@@ -94,7 +94,6 @@ def main(config_path):
 if __name__ == "__main__":
     current_file_path = os.path.abspath(__file__)
     current_dir = os.path.dirname(current_file_path)
-    
     current_datetime = get_formatted_datetime()
     
     parser = argparse.ArgumentParser(description="Service health checker for healthchecks.io.",epilog="Arcanexus - Under Licence GPLv3")
