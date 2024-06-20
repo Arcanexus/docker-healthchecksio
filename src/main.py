@@ -57,13 +57,13 @@ def send_monitoring_request(monitoring_url):
 # Main function to perform the checks every minute
 def main(config_path):
     while True:
+        current_datetime = get_formatted_datetime()
         try:
             config = read_config(config_path)
         except:
             print(f"{current_datetime} - [ERROR] - Invalid config file or directory : " + config_path)
             parser.print_help()
             exit(1)
-        current_datetime = get_formatted_datetime()
         if args.debug:
             print(f"{current_datetime} - [DEBUG] - Reloading config :")
             print('\n{:#^80s}'.format(" BEGINNING "))
