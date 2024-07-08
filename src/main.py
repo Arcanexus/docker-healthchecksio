@@ -1,9 +1,12 @@
 import os, sys
+import re
 import time
 import yaml
 import requests
 import argparse
 from datetime import datetime
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Function to get the current date and time formatted as "31-Dec-2023 19:34"
 def get_formatted_datetime():
@@ -35,14 +38,14 @@ def read_config(path):
         raise ValueError(f"Invalid path: {path}")
 
 # Function to check if a service URL returns a 200 HTTP status code
-def check_service(service_url):
+def check_serviceHTTP(service_endpoint, check_ssl=True):
     try:
-        response = requests.get(service_url, allow_redirects=True)
+        response = requests.get(service_endpoint, allow_redirects=True, verify=check_ssl)
         # return response.status_code == 200
         return response
     except requests.RequestException as e:
         current_datetime = get_formatted_datetime()
-        print(f"{current_datetime} - [ERROR] - Error checking service {service_url}: {e}")
+        print(f"{current_datetime} - [ERROR] - Error checking service {service_endpoint}: {e}")
         return False
 
 # Function to send an HTTP POST request to the monitoring URL
@@ -70,22 +73,38 @@ def main(config_path):
             yaml.dump(config, sys.stdout, default_flow_style=False)
             print('{:#^80s}\n'.format(" END "))
         for item in config['services']:
-            name = item['name']
-            service_url = item['service_url']
-            monitoring_url = item['healthchecks_io_monitoring_url']
             
-            if debug:
-                print(f"{current_datetime} - [DEBUG] - Checking {name} at {service_url} for {monitoring_url}")
-            res = check_service(service_url)
-            if debug:
+            name = item['name']
+            service_endpoint = item['service_endpoint']
+            monitoring_url = item['healthchecks_io_monitoring_url']
+            check_type = item.get('check', {}).get('type', 'http')
+            check_ssl = item.get('check', {}).get('ssl_check', True)
+            success = False
+
+            if check_type == 'http':
+                if debug:
+                    print(f"{current_datetime} - [DEBUG] - Checking {name} ({check_type}/SSL Check={str(check_ssl)}) at {service_endpoint} for {monitoring_url}")
+                
+                res = check_serviceHTTP(service_endpoint, check_ssl)
+                
+                if debug:
                     print(f"{current_datetime} - [DEBUG] - HTTP Code {res.status_code} - {res.reason}")
-            if res.ok:
-                print(f"{current_datetime} - [INFO ] - Service {name:<10} UP   at {service_url}")
+
+                # Match 2xx, 401, 403 HTTP return codes
+                rc_pattern = re.compile(r'^(2\d{2}|401|403)$')
+                
+                if rc_pattern.match(str(res.status_code)):
+                    success = True
+                else:
+                    success = False
+
+            if success:
+                print(f"{current_datetime} - [INFO ] - Service {name:<10} UP   at {service_endpoint}")
                 send_monitoring_request(monitoring_url)
             else:
-                print(f"{current_datetime} - [ERROR] - Service {name:<10} DOWN at {service_url}")
+                print(f"{current_datetime} - [ERROR] - Service {name:<10} DOWN at {service_endpoint}")
                 send_monitoring_request(monitoring_url + "/fail")
-        
+    
         if debug:
             print(f"{current_datetime} - [DEBUG] - Sleeping 60 seconds ...")
         time.sleep(60)  # Wait for 1 minute before the next check

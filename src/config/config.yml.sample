@@ -1,5 +1,8 @@
 services:
   - name: "Google"
+    check:
+      type: http
+      ssl_check: true
     service_url: "https://www.google.com/"
     healthchecks_io_monitoring_url: "https://hc-ping.com/12345678-9abc-defg-hijk-lmnopqrstuv"
   - name: "Test"

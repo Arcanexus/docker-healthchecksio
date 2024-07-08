@@ -13,19 +13,23 @@ The expected configuration is the following :
 ```yaml
 services:
   - name: "Google"
-    service_url: "https://www.google.com/"
+    check:
+      type: http
+      ssl_check: true
+    service_endpoint: "https://www.google.com/"
     healthchecks_io_monitoring_url: "https://hc-ping.com/12345678-9abc-defg-hijk-lmnopqrstuv"
   - name: "Test"
-    service_url: "https://test.company.com/api/45/metrics/ping"
+    service_endpoint: "https://test.company.com/api/45/metrics/ping"
     healthchecks_io_monitoring_url: "https://hc-ping.com/12345678-9abc-defg-hijk-zzzzzzzzzzz"
-
 ```
 Each service is defined by :
-|   |   |
-|---|---|
-|name                             |Name of the service (for logging purpose)                    |
-|service_url                      |URL of the service to check                                  |
-|healthchecks_io_monitoring_url   |URL of the healthchecks.io check associated to the service ([documentation](https://healthchecks.io/docs/http_api/#success-uuid))  |
+|Parameter   |Value   |Default value|
+|---|---|---|
+|name                             |Name of the service (for logging purpose)                    ||
+|check.type|- http<br>(more to come) |http|
+|check.ssl_check|true/false<br>(Only for check.type=http)|true|
+|service_endpoint                      |Endpoint of the service to check                                  ||
+|healthchecks_io_monitoring_url   |URL of the healthchecks.io check associated to the service ([documentation](https://healthchecks.io/docs/http_api/#success-uuid))  ||
 
 ## Usage
 
