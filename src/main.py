@@ -8,10 +8,27 @@ from datetime import datetime
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+debug = False
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
 # Function to get the current date and time formatted as "31-Dec-2023 19:34"
 def get_formatted_datetime():
     now = datetime.now()
     return now.strftime("%d-%b-%Y %H:%M")
+
+def printdebug(msg):
+    if debug:
+        current_datetime = get_formatted_datetime()
+        print(f"{bcolors.OKBLUE}{current_datetime} - [DEBUG] - {msg}{bcolors.ENDC}")
 
 # Function to read a single YAML file
 def read_yaml_file(file_path):
@@ -39,14 +56,29 @@ def read_config(path):
 
 # Function to check if a service URL returns a 200 HTTP status code
 def check_serviceHTTP(service_endpoint, check_ssl=True):
+    current_datetime = get_formatted_datetime()
     try:
         response = requests.get(service_endpoint, allow_redirects=True, verify=check_ssl)
-        # return response.status_code == 200
-        return response
-    except requests.RequestException as e:
-        current_datetime = get_formatted_datetime()
-        print(f"{current_datetime} - [ERROR] - Error checking service {service_endpoint}: {e}")
+        printdebug(f"HTTP Code {response.status_code} - {response.reason}")
+        rc_pattern = re.compile(r'^(2\d{2}|401|403)$')
+        if rc_pattern.match(str(response.status_code)):
+            return True
+        else:
+            return False
+        
+    except requests.exceptions.SSLError as e:
+        print(f"{current_datetime} - [{bcolors.FAIL}ERROR{bcolors.ENDC}] - SSL Error checking service {service_endpoint}: {e}")
         return False
+
+    except requests.exceptions.RequestException as e:
+        # if 'MaxRetryError' not in str(e.args) or 'NewConnectionError' not in str(e.args):
+        #     print(f"{current_datetime} - [ERROR] - What {service_endpoint}: {e}")
+        if "[Errno 8]" in str(e) or "[Errno 11001]" in str(e) or ["Errno -2"] in str(e):
+            printdebug(f"Fail to resolve {service_endpoint}: {e}")
+        else:
+            printdebug(f"Error checking service {service_endpoint}: {e}")
+        return False
+
 
 # Function to send an HTTP POST request to the monitoring URL
 def send_monitoring_request(monitoring_url):
@@ -55,7 +87,7 @@ def send_monitoring_request(monitoring_url):
         # print(f"Sent POST request to {monitoring_url}, response status: {response.status_code}")
     except requests.RequestException as e:
         current_datetime = get_formatted_datetime()
-        print(f"{current_datetime} - [ERROR] - Error sending POST request to {monitoring_url}: {e}")
+        print(f"{current_datetime} - [{bcolors.FAIL}ERROR{bcolors.ENDC}] - Error sending POST request to {monitoring_url}: {e}")
 
 # Main function to perform the checks every minute
 def main(config_path):
@@ -64,14 +96,14 @@ def main(config_path):
         try:
             config = read_config(config_path)
         except:
-            print(f"{current_datetime} - [ERROR] - Invalid config file or directory : " + config_path)
+            print(f"{current_datetime} - [{bcolors.FAIL}ERROR{bcolors.ENDC}] - Invalid config file or directory : " + config_path)
             parser.print_help()
             exit(1)
         if debug:
-            print(f"{current_datetime} - [DEBUG] - Reloading config :")
+            print(f"{bcolors.OKBLUE}{current_datetime} - [DEBUG] - Reloading config :")
             print('\n{:#^80s}'.format(" BEGINNING "))
             yaml.dump(config, sys.stdout, default_flow_style=False)
-            print('{:#^80s}\n'.format(" END "))
+            print('{:#^80s}\n'.format(" END ")+f"{bcolors.ENDC}")
         for item in config['services']:
             
             name = item['name']
@@ -79,34 +111,20 @@ def main(config_path):
             monitoring_url = item['healthchecks_io_monitoring_url']
             check_type = item.get('check', {}).get('type', 'http')
             check_ssl = item.get('check', {}).get('ssl_check', True)
-            success = False
 
             if check_type == 'http':
-                if debug:
-                    print(f"{current_datetime} - [DEBUG] - Checking {name} ({check_type}/SSL Check={str(check_ssl)}) at {service_endpoint} for {monitoring_url}")
+                printdebug(f"Checking {name} ({check_type}/SSL Check={str(check_ssl)}) at {service_endpoint} for {monitoring_url}")
                 
                 res = check_serviceHTTP(service_endpoint, check_ssl)
                 
-                if debug:
-                    print(f"{current_datetime} - [DEBUG] - HTTP Code {res.status_code} - {res.reason}")
-
-                # Match 2xx, 401, 403 HTTP return codes
-                rc_pattern = re.compile(r'^(2\d{2}|401|403)$')
-                
-                if rc_pattern.match(str(res.status_code)):
-                    success = True
-                else:
-                    success = False
-
-            if success:
-                print(f"{current_datetime} - [INFO ] - Service {name:<10} UP   at {service_endpoint}")
+            if res:
+                print(f"{current_datetime} - [{bcolors.OKGREEN}INFO {bcolors.ENDC}] - Service {name:<20} {bcolors.OKGREEN}UP{bcolors.ENDC}   at {service_endpoint}")
                 send_monitoring_request(monitoring_url)
             else:
-                print(f"{current_datetime} - [ERROR] - Service {name:<10} DOWN at {service_endpoint}")
+                print(f"{current_datetime} - [{bcolors.FAIL}ERROR{bcolors.ENDC}] - Service {name:<20} {bcolors.FAIL}DOWN{bcolors.ENDC} at {service_endpoint}")
                 send_monitoring_request(monitoring_url + "/fail")
     
-        if debug:
-            print(f"{current_datetime} - [DEBUG] - Sleeping 60 seconds ...")
+        printdebug(f"Sleeping 60 seconds ...")
         time.sleep(60)  # Wait for 1 minute before the next check
 
 # Entry point
@@ -123,7 +141,7 @@ if __name__ == "__main__":
     config_path = args.config
     if args.debug or os.getenv('DEBUG', 'false').lower() == 'true':
         debug = True
-        print(f"{current_datetime} - [DEBUG] - Debug Mode ON")
+        printdebug(f"Debug Mode ON")
     else:
         debug = False
     
