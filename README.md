@@ -1,6 +1,6 @@
 # docker-healthchecksio
 
-[![Docker Build](https://github.com/Arcanexus/docker-healthchecksio/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/Arcanexus/docker-healthchecksio/actions/workflows/docker-publish.yml)
+[![Docker Build](https://github.com/Arcanexus/docker-healthchecksio/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/Arcanexus/docker-healthchecksio/actions/workflows/docker-publish.yml) [![Automated Tests](https://github.com/Arcanexus/docker-healthchecksio/actions/workflows/tests.yml/badge.svg)](https://github.com/Arcanexus/docker-healthchecksio/actions/workflows/tests.yml)
 
 ## Purpose
 
