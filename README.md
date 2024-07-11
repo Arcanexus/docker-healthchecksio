@@ -4,12 +4,25 @@
 
 ## Purpose
 
-This repo creates a Docker image that performs HTTP tests on services and update [healthchecks.io](https://healthchecks.io) checks accordingly.
+This repo creates a Docker image that performs HTTP/TCP tests on services and update [healthchecks.io](https://healthchecks.io) checks accordingly.
 
 Services are described in yaml config files.
 
 ## Configuration format
-The expected configuration is the following :
+Each service is defined by :
+
+|Parameter   |Mandatory|Value   |Default value|
+|---|---|---|---|
+|name |True|Name of the service (for logging purpose)||
+|service_endpoint|True|Endpoint of the service to check                                  ||
+|healthchecks_io_monitoring_url|True|URL of the healthchecks.io check associated to the service ([documentation](https://healthchecks.io/docs/http_api/#success-uuid))  ||
+|check.type|False|- http<br>- tcp|http|
+|check.ssl_check|False|true/false<br>(Only for check.type=http)|true|
+|check.tcp_port|False|TCP port (Only for check.type=tcp)|80|
+|check.tcp_timeout|False|TCP timeout (Only for check.type=tcp)|5|
+
+
+Here is an configuration example :
 ```yaml
 services:
   - name: "Google"
@@ -21,15 +34,14 @@ services:
   - name: "Test"
     service_endpoint: "https://test.company.com/api/45/metrics/ping"
     healthchecks_io_monitoring_url: "https://hc-ping.com/12345678-9abc-defg-hijk-zzzzzzzzzzz"
+  - name: TCPBin
+    service_endpoint: tcpbin.com
+    check:
+      type: tcp
+      tcp_port: 4242
+      tcp_timeout: 30
+    healthchecks_io_monitoring_url: "https://hc-ping.com/12345678-9abc-defg-hijk-zzzzzzzzzzz"
 ```
-Each service is defined by :
-|Parameter   |Value   |Default value|
-|---|---|---|
-|name                             |Name of the service (for logging purpose)                    ||
-|check.type|- http<br>(more to come) |http|
-|check.ssl_check|true/false<br>(Only for check.type=http)|true|
-|service_endpoint                      |Endpoint of the service to check                                  ||
-|healthchecks_io_monitoring_url   |URL of the healthchecks.io check associated to the service ([documentation](https://healthchecks.io/docs/http_api/#success-uuid))  ||
 
 ## Usage
 
