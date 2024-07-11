@@ -3,8 +3,15 @@ services:
     check:
       type: http
       ssl_check: true
-    service_url: "https://www.google.com/"
+    service_endpoint: "https://www.google.com/"
     healthchecks_io_monitoring_url: "https://hc-ping.com/12345678-9abc-defg-hijk-lmnopqrstuv"
   - name: "Test"
-    service_url: "https://test.company.com/api/45/metrics/ping"
+    service_endpoint: "https://test.company.com/api/45/metrics/ping"
+    healthchecks_io_monitoring_url: "https://hc-ping.com/12345678-9abc-defg-hijk-zzzzzzzzzzz"
+  - name: TCPBin
+    service_endpoint: tcpbin.com
+    check:
+      type: tcp
+      tcp_port: 4242
+      tcp_timeout: 30
     healthchecks_io_monitoring_url: "https://hc-ping.com/12345678-9abc-defg-hijk-zzzzzzzzzzz"

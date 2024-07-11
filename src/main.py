@@ -5,6 +5,7 @@ import yaml
 import requests
 import argparse
 from datetime import datetime
+import socket
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -79,7 +80,26 @@ def check_serviceHTTP(service_endpoint, check_ssl=True):
             printdebug(f"Error checking service {service_endpoint}: {e}")
         return False
 
-
+def check_serviceTCP(service_endpoint, port, timeout=5):
+    current_datetime = get_formatted_datetime()
+    try:
+        # Create a socket object
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(timeout)  # Set a timeout for the connection attempt
+        
+        # Connect to the service endpoint
+        sock.connect((service_endpoint, port))
+        
+        # If the connection is successful, close the socket and return True
+        sock.close()
+        return True
+    except socket.timeout:
+        print(f"{current_datetime} - [{bcolors.FAIL}ERROR{bcolors.ENDC}] - Connection timeout to {service_endpoint}:{port} after {timeout} seconds.")
+        return False
+    except socket.error as e:
+        print(f"{current_datetime} - [{bcolors.FAIL}ERROR{bcolors.ENDC}] - Connection failed to {service_endpoint}:{port} after {timeout} seconds.")
+        return False
+    
 # Function to send an HTTP POST request to the monitoring URL
 def send_monitoring_request(monitoring_url):
     try:
@@ -105,23 +125,29 @@ def main(config_path):
             yaml.dump(config, sys.stdout, default_flow_style=False)
             print('{:#^80s}\n'.format(" END ")+f"{bcolors.ENDC}")
         for item in config['services']:
-            
             name = item['name']
             service_endpoint = item['service_endpoint']
             monitoring_url = item['healthchecks_io_monitoring_url']
             check_type = item.get('check', {}).get('type', 'http')
-            check_ssl = item.get('check', {}).get('ssl_check', True)
 
             if check_type == 'http':
-                printdebug(f"Checking {name} ({check_type}/SSL Check={str(check_ssl)}) at {service_endpoint} for {monitoring_url}")
-                
+                check_ssl = item.get('check', {}).get('ssl_check', True)
+                printdebug(f"Checking {name} ({check_type.upper()}/SSL Check={str(check_ssl)}) at {service_endpoint} for {monitoring_url}")
                 res = check_serviceHTTP(service_endpoint, check_ssl)
-                
+                tested_endpoint = service_endpoint
+            
+            if check_type == 'tcp':
+                tcp_port = int(item.get('check', {}).get('tcp_port', 80))
+                tcp_timeout = int(item.get('check', {}).get('tcp_timeout', 5))
+                printdebug(f"Checking {name} ({check_type.upper()}) at {service_endpoint}:{str(tcp_port)} for {monitoring_url}")
+                res = check_serviceTCP(service_endpoint, tcp_port, tcp_timeout)
+                tested_endpoint = 'tcp://' + service_endpoint + ':' + str(tcp_port)
+
             if res:
-                print(f"{current_datetime} - [{bcolors.OKGREEN}INFO {bcolors.ENDC}] - Service {name:<20} {bcolors.OKGREEN}UP{bcolors.ENDC}   at {service_endpoint}")
+                print(f"{current_datetime} - [{bcolors.OKGREEN}INFO {bcolors.ENDC}] - Service {name:<20} {bcolors.OKGREEN}UP{bcolors.ENDC}   at {tested_endpoint}")
                 send_monitoring_request(monitoring_url)
             else:
-                print(f"{current_datetime} - [{bcolors.FAIL}ERROR{bcolors.ENDC}] - Service {name:<20} {bcolors.FAIL}DOWN{bcolors.ENDC} at {service_endpoint}")
+                print(f"{current_datetime} - [{bcolors.FAIL}ERROR{bcolors.ENDC}] - Service {name:<20} {bcolors.FAIL}DOWN{bcolors.ENDC} at {tested_endpoint}")
                 send_monitoring_request(monitoring_url + "/fail")
     
         printdebug(f"Sleeping 60 seconds ...")

@@ -14,3 +14,10 @@ def test_checkHTTPSuccess():
 def test_checkHTTPFail():
   res = main.check_serviceHTTP("https://www.unknownurlfqdn.com")
   assert res == False
+
+def test_checkTCPSuccess():
+  assert main.check_serviceTCP("www.google.com", 443)
+
+def test_checkTCPFail():
+  res = main.check_serviceTCP("www.unknownurlfqdn.com", 10)
+  assert res == False
