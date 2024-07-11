@@ -73,7 +73,7 @@ def check_serviceHTTP(service_endpoint, check_ssl=True):
     except requests.exceptions.RequestException as e:
         # if 'MaxRetryError' not in str(e.args) or 'NewConnectionError' not in str(e.args):
         #     print(f"{current_datetime} - [ERROR] - What {service_endpoint}: {e}")
-        if "[Errno 8]" in str(e) or "[Errno 11001]" in str(e) or ["Errno -2"] in str(e):
+        if "[Errno 8]" in str(e) or "[Errno 11001]" in str(e) or "[Errno -2]" in str(e):
             printdebug(f"Fail to resolve {service_endpoint}: {e}")
         else:
             printdebug(f"Error checking service {service_endpoint}: {e}")
