@@ -50,6 +50,11 @@ services:
 - **DEBUG** environment variable set to `true`
 
 ### Using Docker
+The image is build for the following architectures :
+- linux/amd64
+- linux/arm64
+- linux/arm/v7
+
 #### Use a single YAML config file
 ```bash
 docker run -d --name docker-healthchecksio \
