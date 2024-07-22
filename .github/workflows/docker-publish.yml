@@ -36,7 +36,7 @@ jobs:
       - name: Setup test environment
         run: |
           pip install -U -r src/requirements.txt
-          pip install -U pytest
+          pip install -U pytest==8.2.2
 
       - name: Run tests
         run: pytest -v
