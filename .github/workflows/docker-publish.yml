@@ -26,20 +26,7 @@ env:
 
 jobs:
   tests:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.10' 
-      - name: Setup test environment
-        run: |
-          pip install -U -r src/requirements.txt
-          pip install -U pytest==8.2.2
-
-      - name: Run tests
-        run: pytest -v
+    uses: ./.github/workflows/tests.yml
 
   build:
     runs-on: ubuntu-latest

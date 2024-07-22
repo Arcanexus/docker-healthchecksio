@@ -15,6 +15,7 @@ on:
   pull_request:
     # branches: [ "main" ]
   workflow_dispatch: 
+  workflow_call:
   repository_dispatch:
 
 jobs:
@@ -30,7 +31,7 @@ jobs:
         run: |
           pip install -U pip
           pip install -U -r src/requirements.txt
-          pip install -U pytest==8.2.2
+          pip install -U -r tests/requirements.txt
 
       - name: Run tests
         run: pytest -v
