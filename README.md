@@ -85,6 +85,7 @@ Each service is defined by :
 |service_endpoint|True|Endpoint of the service to check                                  ||
 |healthchecks_io_monitoring_url|True|URL of the healthchecks.io check associated to the service ([documentation](https://healthchecks.io/docs/http_api/#success-uuid))  ||
 |check.type|False|- http<br>- tcp|http|
+|check.polling_timer|False|Waiting time betwen checks (in seconds)|60|
 |check.ssl_check|False|true/false<br>(Only for check.type=http)|true|
 |check.tcp_port|False|TCP port (Only for check.type=tcp)|80|
 |check.tcp_timeout|False|TCP timeout (Only for check.type=tcp)|5|
@@ -93,16 +94,18 @@ Each service is defined by :
 Here is an configuration example :
 ```yaml
 services:
-  - name: "Google"
+  - name: "Google HTTP test"
     check:
       type: http
       ssl_check: true
     service_endpoint: "https://www.google.com/"
     healthchecks_io_monitoring_url: "https://hc-ping.com/12345678-9abc-defg-hijk-lmnopqrstuv"
-  - name: "Test"
+  - name: "Test every 30s"
+    check:
+      polling_timer: 30
     service_endpoint: "https://test.company.com/api/45/metrics/ping"
     healthchecks_io_monitoring_url: "https://hc-ping.com/12345678-9abc-defg-hijk-zzzzzzzzzzz"
-  - name: TCPBin
+  - name: "TCPBin TCP test"
     service_endpoint: tcpbin.com
     check:
       type: tcp

@@ -20,6 +20,7 @@ def monitor_service(item):
     service_endpoint = item['service_endpoint']
     monitoring_url = item['healthchecks_io_monitoring_url']
     check_type = item.get('check', {}).get('type', 'http')
+    polling_timer = item.get('check', {}).get('polling_timer', 60)
     thread_name = f"c_{to_camel_case(name)}"
     threading.current_thread().name = thread_name
 
@@ -45,8 +46,8 @@ def monitor_service(item):
             print(f"{current_datetime} - [{bcolors.FAIL}ERROR{bcolors.ENDC}] - Service {name:<20} {bcolors.FAIL}DOWN{bcolors.ENDC} at {tested_endpoint}")
             post_healthchecksio_status(monitoring_url + "/fail")
 
-        printdebug(f"Sleeping 60 seconds before next check for {name}...", debug)
-        time.sleep(60)
+        printdebug(f"Sleeping {polling_timer} seconds before next check for {name}...", debug)
+        time.sleep(polling_timer)
 
 # Main function to read the config and start monitoring services in parallel
 def main(config_path):

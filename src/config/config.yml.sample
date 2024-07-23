@@ -5,7 +5,9 @@ services:
       ssl_check: true
     service_endpoint: "https://www.google.com/"
     healthchecks_io_monitoring_url: "https://hc-ping.com/12345678-9abc-defg-hijk-lmnopqrstuv"
-  - name: "Test"
+  - name: "Test every 30s"
+    check:
+      polling_timer: 30
     service_endpoint: "https://test.company.com/api/45/metrics/ping"
     healthchecks_io_monitoring_url: "https://hc-ping.com/12345678-9abc-defg-hijk-zzzzzzzzzzz"
   - name: "TCPBin TCP test"
