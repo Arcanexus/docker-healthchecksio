@@ -8,8 +8,8 @@ This PR [adds/removes/fixes/replaces] the [feature/bug/etc].
 
 
 ## Checklist
-- [ ] 📖 Read the Open Sauced Contributing Guide: [https://github.com/open-sauced/.github/blob/main/CONTRIBUTING.md](https://github.com/Arcanexus/docker-healthchecksio/blob/main/CONTRIBUTING.md).
-- [ ] 📖 Read the Open Sauced Code of Conduct: [https://github.com/open-sauced/.github/blob/main/CODE_OF_CONDUCT.md](https://github.com/Arcanexus/docker-healthchecksio/blob/main/CODE_OF_CONDUCT.md).
+- [ ] 📖 Read the Open Sauced Contributing Guide: [https://github.com/Arcanexus/docker-healthchecksio/blob/main/CONTRIBUTING.md](https://github.com/Arcanexus/docker-healthchecksio/blob/main/CONTRIBUTING.md).
+- [ ] 📖 Read the Open Sauced Code of Conduct: [https://github.com/Arcanexus/docker-healthchecksio/blob/main/CODE_OF_CONDUCT.md](https://github.com/Arcanexus/docker-healthchecksio/blob/main/CODE_OF_CONDUCT.md).
 - [ ] 👷‍♀️ Create small PRs. In most cases, this will be possible.
 - [ ] ⚠️ The Pull Request must be linked to an opened Issue
 - [ ] 📝 The title must begin with :
