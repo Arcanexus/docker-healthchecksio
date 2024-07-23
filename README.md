@@ -86,7 +86,8 @@ Each service is defined by :
 |healthchecks_io_monitoring_url|True|URL of the healthchecks.io check associated to the service ([documentation](https://healthchecks.io/docs/http_api/#success-uuid))  ||
 |check.type|False|- http<br>- tcp|http|
 |check.polling_timer|False|Waiting time betwen checks (in seconds)|60|
-|check.ssl_check|False|true/false<br>(Only for check.type=http)|true|
+|check.debug|False|Enable/Disable Debug mode for the service|False|
+|check.ssl_check|False|true/false<br>(Only for check.type=http)|True|
 |check.tcp_port|False|TCP port (Only for check.type=tcp)|80|
 |check.tcp_timeout|False|TCP timeout (Only for check.type=tcp)|5|
 
@@ -111,6 +112,11 @@ services:
       type: tcp
       tcp_port: 4242
       tcp_timeout: 30
+    healthchecks_io_monitoring_url: "https://hc-ping.com/12345678-9abc-defg-hijk-zzzzzzzzzzz"
+  - name: "Debug a specific test"
+    check:
+      debug: true
+    service_endpoint: "https://test.company.com/api/45/metrics/ping"
     healthchecks_io_monitoring_url: "https://hc-ping.com/12345678-9abc-defg-hijk-zzzzzzzzzzz"
 ```
 

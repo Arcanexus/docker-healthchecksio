@@ -1,7 +1,9 @@
 import os
+import sys
 import time
 import argparse
 import threading
+import yaml
 import urllib3
 from concurrent.futures import ThreadPoolExecutor
 
@@ -15,13 +17,14 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 debug = False
 
 # Function to monitor a service
-def monitor_service(item):
+def monitor_service(item, debug=False):
     name = item['name']
     service_endpoint = item['service_endpoint']
     monitoring_url = item['healthchecks_io_monitoring_url']
     check_type = item.get('check', {}).get('type', 'http')
+    debug = item.get('check', {}).get('debug', debug)
     polling_timer = item.get('check', {}).get('polling_timer', 60)
-    thread_name = f"c_{to_camel_case(name)}"
+    thread_name = f"{to_camel_case(name)}Thread"
     threading.current_thread().name = thread_name
 
     while True:
@@ -52,15 +55,22 @@ def monitor_service(item):
 # Main function to read the config and start monitoring services in parallel
 def main(config_path):
     try:
+        printdebug(f"Reading config from {config_path}", debug)
         config = read_config(config_path)
     except ValueError as e:
         current_datetime = get_formatted_datetime()
         print(f"{current_datetime} - [{bcolors.FAIL}ERROR{bcolors.ENDC}] - {e}")
         parser.print_help()
         exit(1)
-    
+
+    printdebug(f"Reloading config :", debug)
+    if debug:
+        print(f"{bcolors.OKBLUE}" + '{:#^80s}'.format(" BEGINNING "))
+        yaml.dump(config, sys.stdout, default_flow_style=False)
+        print('{:#^80s}'.format(" END ") + f"{bcolors.ENDC}")
+
     with ThreadPoolExecutor() as executor:
-        futures = [executor.submit(monitor_service, item) for item in config['services']]
+        futures = [executor.submit(monitor_service, item, debug) for item in config['services']]
         for future in futures:
             future.result()
 

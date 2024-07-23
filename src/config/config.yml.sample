@@ -17,3 +17,8 @@ services:
       tcp_port: 4242
       tcp_timeout: 30
     healthchecks_io_monitoring_url: "https://hc-ping.com/12345678-9abc-defg-hijk-zzzzzzzzzzz"
+  - name: "Debug a specific test"
+    check:
+      debug: true
+    service_endpoint: "https://test.company.com/api/45/metrics/ping"
+    healthchecks_io_monitoring_url: "https://hc-ping.com/12345678-9abc-defg-hijk-zzzzzzzzzzz"
