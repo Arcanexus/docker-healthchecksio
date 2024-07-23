@@ -1,5 +1,5 @@
 services:
-  - name: "Google"
+  - name: "Google HTTP test"
     check:
       type: http
       ssl_check: true
@@ -8,7 +8,7 @@ services:
   - name: "Test"
     service_endpoint: "https://test.company.com/api/45/metrics/ping"
     healthchecks_io_monitoring_url: "https://hc-ping.com/12345678-9abc-defg-hijk-zzzzzzzzzzz"
-  - name: TCPBin
+  - name: "TCPBin TCP test"
     service_endpoint: tcpbin.com
     check:
       type: tcp
