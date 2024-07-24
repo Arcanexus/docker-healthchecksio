@@ -26,6 +26,7 @@ WORKDIR /app
 # Copy the source code
 COPY src/main.py ./main.py
 COPY src/config ./config
+COPY src/modules ./modules
 
 # Command to run the script
 CMD ["python", "-u", "main.py"]
