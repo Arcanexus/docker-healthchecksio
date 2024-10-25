@@ -1,6 +1,6 @@
 # docker-healthchecksio
 ![GitHub Release](https://img.shields.io/github/v/release/arcanexus/docker-healthchecksio)
-[![python](https://img.shields.io/badge/Python-3.12-3776AB.svg?style=flat&logo=python&logoColor=white)](https://www.python.org)
+[![python](https://img.shields.io/badge/Python-3.13-3776AB.svg?style=flat&logo=python&logoColor=white)](https://www.python.org)
 ![Alpine Linux](https://img.shields.io/badge/Run_on_Alpine_Linux-%230D597F.svg?logo=alpine-linux&logoColor=white)
 [![Docker Build](https://github.com/Arcanexus/docker-healthchecksio/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/Arcanexus/docker-healthchecksio/actions/workflows/docker-publish.yml)
 [![Automated Tests](https://github.com/Arcanexus/docker-healthchecksio/actions/workflows/tests.yml/badge.svg)](https://github.com/Arcanexus/docker-healthchecksio/actions/workflows/tests.yml)
@@ -46,7 +46,7 @@ helm upgrade monitoring-healthckecksio ./helm/ -i
 ### Run Python directly
 
 #### Prerequisites
-- Python 3 (tested on Python 3.12)
+- Python 3 (tested on Python 3.13)
 - PIP
 
 It is recommended to use a [venv](https://docs.python.org/fr/3/library/venv.html) to isolate the running context from the system.
