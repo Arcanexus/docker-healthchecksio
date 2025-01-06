@@ -8,13 +8,25 @@ def read_yaml_file(file_path):
 
 # Function to read all YAML files from a directory
 def read_yaml_directory(dir_path):
-    config = {'services': []}
+    merged_data = {}
+
+    # Loop through all files in the directory
     for file_name in os.listdir(dir_path):
-        if file_name.endswith('.yml') or file_name.endswith('.yaml'):
+        # Check if the file is a YAML file
+        if file_name.endswith(('.yml', '.yaml')):
             file_path = os.path.join(dir_path, file_name)
-            file_config = read_yaml_file(file_path)
-            config['services'].extend(file_config.get('services', []))
-    return config
+            with open(file_path, 'r') as file:
+                try:
+                    yaml_data = yaml.safe_load(file)  # Load the YAML file
+                    if isinstance(yaml_data, dict):
+                        merged_data.update(yaml_data)  # Merge dictionaries
+                    else:
+                        print(f"Skipping {file_name}: not a dictionary")
+                except yaml.YAMLError as e:
+                    print(f"Error parsing {file_name}: {e}")
+
+    return merged_data
+
 
 # Function to determine if a path is a file or directory and read config
 def read_config(path):

@@ -11,6 +11,7 @@ from modules.common import bcolors, get_formatted_datetime, printdebug, to_camel
 from modules.config import read_config
 from modules.checks import check_serviceHTTP, check_serviceTCP
 from modules.healthchecksio import post_healthchecksio_status
+from modules.logger import get_logger
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -53,9 +54,8 @@ def monitor_service(item, debug=False):
         time.sleep(polling_timer)
 
 # Main function to read the config and start monitoring services in parallel
-def main(config_path):
+def main(config_path, debug):
     try:
-        printdebug(f"Reading config from {config_path}", debug)
         config = read_config(config_path)
     except ValueError as e:
         current_datetime = get_formatted_datetime()
@@ -63,7 +63,20 @@ def main(config_path):
         parser.print_help()
         exit(1)
 
-    printdebug(f"Reloading config :", debug)
+    if debug or config['config']['logs']['log_level'] == 'DEBUG':
+        debug = True
+    else:
+        debug = False
+        
+    logging = get_logger(loglevel=config['config']['logs']['log_level'],logformat=config['config']['logs']['format'])
+    logging.debug("debug")
+    logging.info("info UP DOWN test")
+    logging.warning("warning")
+    logging.error("error")
+    logging.critical("critical")
+    # exit(0)
+
+    logging.debug(f"Loaded config from {config_path} :")
     if debug:
         print(f"{bcolors.OKBLUE}" + '{:#^80s}'.format(" BEGINNING "))
         yaml.dump(config, sys.stdout, default_flow_style=False)
@@ -85,11 +98,11 @@ if __name__ == "__main__":
     parser.add_argument('-d', '--debug', action='store_true', help='Enable debug mode')
     args = parser.parse_args()
     
+    global config_path
     config_path = args.config
     if args.debug or os.getenv('DEBUG', 'false').lower() == 'true':
         debug = True
-        printdebug(f"Debug Mode ON", debug)
     else:
         debug = False
     
-    main(config_path)
+    main(config_path=config_path, debug=debug)

@@ -1,7 +1,7 @@
 import requests
 import socket
 import re
-from modules.common import bcolors, get_formatted_datetime, printdebug
+from .common import bcolors, get_formatted_datetime, printdebug
 
 # Function to check if a service URL returns a 200 HTTP status code
 def check_serviceHTTP(service_endpoint, check_ssl=True, debug=False):
