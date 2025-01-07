@@ -1,11 +1,12 @@
+""" Main entry point for the service health checker. """
 import os
 import sys
 import time
 import argparse
 import threading
+from concurrent.futures import ThreadPoolExecutor
 import yaml
 import urllib3
-from concurrent.futures import ThreadPoolExecutor
 
 from modules.common import bcolors, get_formatted_datetime, printdebug, to_camel_case
 from modules.config import read_config
