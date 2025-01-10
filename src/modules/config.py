@@ -1,10 +1,14 @@
+"""Config management"""
+
 import os
 import yaml
+
 
 # Function to read a single YAML file
 def read_yaml_file(file_path):
     with open(file_path, 'r') as file:
         return yaml.safe_load(file)
+
 
 # Function to read all YAML files from a directory
 def read_yaml_directory(dir_path):
@@ -36,3 +40,62 @@ def read_config(path):
         return read_yaml_directory(path)
     else:
         raise ValueError(f"Invalid path: {path}")
+
+
+class Config:
+    def __init__(self, path):
+        self.config_path = path
+        self.config_override = {}
+        self.reload()
+
+    def reload(self):
+        self.config = read_config(self.config_path)
+        self.current_config = self._merge_dicts(self.config, self.config_override)
+
+    def _merge_dicts(self, base, override):
+        for key, value in override.items():
+            if isinstance(value, dict) and key in base and isinstance(base[key], dict):
+                self._merge_dicts(base[key], value)
+            else:
+                base[key] = value
+
+    def get(self, yaml_path):
+        keys = yaml_path.split('.')
+        value = self.config
+        for key in keys:
+            value = value.get(key)
+            if value is None:
+                return None
+        return value
+
+    def set(self, yaml_path, value):
+        keys = yaml_path.split('.')
+        d = self.config_override
+        for key in keys[:-1]:
+            if key not in d:
+                d[key] = {}
+                d = d[key]
+        d[keys[-1]] = value
+        self.reload()
+
+    def delete(self, yaml_path):
+        keys = yaml_path.split('.')
+        d = self.config_override
+        for key in keys[:-1]:
+            if key in d:
+                d = d[key]
+            else:
+                return  # Key path does not exist
+        if keys[-1] in d:
+            del d[keys[-1]]
+
+        # Function to recursively delete empty keys
+        def delete_empty_keys(d):
+            keys_to_delete = [key for key, value in d.items() if isinstance(value, dict)]
+            for key in keys_to_delete:
+                delete_empty_keys(d[key])
+                if not d[key]:
+                    del d[key]
+
+        delete_empty_keys(self.config_override)
+        self.reload()

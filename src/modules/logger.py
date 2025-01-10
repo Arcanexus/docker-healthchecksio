@@ -5,6 +5,7 @@ from logfmter import Logfmter
 from pythonjsonlogger.json import JsonFormatter
 from .common import bcolors, get_formatted_datetime
 
+
 class CustomFormatter(logging.Formatter):
   def format(self, record):
     current_datetime = get_formatted_datetime()
@@ -14,7 +15,7 @@ class CustomFormatter(logging.Formatter):
     msg = record.getMessage()
     msg = msg.replace('UP', f"{bcolors.OKGREEN}UP{bcolors.ENDC}")
     msg = msg.replace('DOWN', f"{bcolors.RED}DOWN{bcolors.ENDC}")
-    
+
     if loglvl == 'DEBUG':
       logcolor = bcolors.GREEN
       return f"{logcolor}{current_datetime} - [{loglvl}] - [{thread_name}-{thread_id}] - {msg}{bcolors.ENDC}"
@@ -32,18 +33,19 @@ class CustomFormatter(logging.Formatter):
 
     return f"{current_datetime} - [{logcolor}{loglvl}{bcolors.ENDC}] - [{thread_name}-{thread_id}] - {msg}{bcolors.ENDC}"
 
-def get_logger(loglevel="DEBUG",logformat="console"):
+
+def get_logger(loglevel="INFO", logformat="console"):
   logger = logging.getLogger('custom_logger')
   logger.setLevel(getattr(logging, loglevel.upper(), logging.DEBUG))
-  
+
   stdouthandler = logging.StreamHandler(sys.stdout)
 
   if logformat == "console":
     formatter = CustomFormatter()
-  elif logformat == "logfmt": 
+  elif logformat == "logfmt":
     formatter = Logfmter(
       keys=["time", "level", "process", "thread"],
-      mapping={"time" : "asctime", "level": "levelname", "process": "processName", "thread": "threadName"},
+      mapping={"time": "asctime", "level": "levelname", "process": "processName", "thread": "threadName"},
     )
   elif logformat == "json":
     formatter = JsonFormatter(
@@ -51,10 +53,8 @@ def get_logger(loglevel="DEBUG",logformat="console"):
       datefmt='%Y-%m-%d %H:%M:%S',
       rename_fields={"levelname": "level"},
     )
-  
+
   stdouthandler.setFormatter(formatter)
-    
 
   logger.addHandler(stdouthandler)
   return logger
-
