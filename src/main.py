@@ -1,15 +1,12 @@
 """ Main entry point for the service health checker. """
-import os
-import sys
 import time
-import argparse
 import threading
 from concurrent.futures import ThreadPoolExecutor
 import yaml
 import urllib3
 
-from modules.common import bcolors, to_camel_case
-from modules.config import Config
+from modules.common import to_camel_case
+from modules.config import current_config, config_path
 from modules.checks import check_serviceHTTP, check_serviceTCP
 from modules.healthchecksio import post_healthchecksio_status
 from modules.logger import get_logger
@@ -55,11 +52,11 @@ def monitor_service(item, debug=False):
 
 # Main function to read the config and start monitoring services in parallel
 def main():
-    logging.debug(f"Loaded config from {config_path} :")
     if current_config.get('config.logs.log_level').upper() == "DEBUG":
-        print(f"{bcolors.GREEN}" + '{:#^80s}'.format(" BEGINNING "))
-        yaml.dump(current_config.config, sys.stdout, default_flow_style=False)
-        print('{:#^80s}'.format(" END ") + f"{bcolors.ENDC}")
+        logging.debug(f"Loaded config from {config_path} :")
+        logging.debug('{:#^80s}'.format(' BEGINNING '))
+        logging.debug('\n\n' + yaml.dump(current_config.config, default_flow_style=False))
+        logging.debug('{:#^80s}'.format(' END '))
 
     with ThreadPoolExecutor() as executor:
         services = current_config.config["services"]
@@ -74,23 +71,7 @@ def main():
 
 # Entry point
 if __name__ == "__main__":
-    current_file_path = os.path.abspath(__file__)
-    current_dir = os.path.dirname(current_file_path)
-
-    parser = argparse.ArgumentParser(description="Service health checker for healthchecks.io.", epilog="Arcanexus - Under Licence GPLv3")
-    parser.add_argument('-c', '--config', type=str, default=current_dir + '/config', help='Path to the config file or directory')
-    parser.add_argument('-d', '--debug', action='store_true', help='Enable debug mode')
-    args = parser.parse_args()
-
-    config_path = args.config
-    current_config = Config(config_path)
-
-    # current_config.set('config.logs.log_level', "DEBUG")
-
-    if args.debug or os.getenv('DEBUG', 'false').lower() == 'true':
-        current_config.set('config.logs.log_level', 'DEBUG')
-
-    logging = get_logger(logformat=current_config.get('config.logs.format'))
+    logging = get_logger()
     logging.setLevel(current_config.get('config.logs.log_level').upper())
 
     main()

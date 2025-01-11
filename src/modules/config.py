@@ -2,6 +2,7 @@
 
 import os
 import yaml
+import argparse
 
 
 # Function to read a single YAML file
@@ -99,3 +100,21 @@ class Config:
 
         delete_empty_keys(self.config_override)
         self.reload()
+
+
+current_file_path = os.path.abspath(__file__)
+current_dir = os.path.dirname(os.path.dirname(current_file_path))
+
+parser = argparse.ArgumentParser(description="Service health checker for healthchecks.io.", epilog="Arcanexus - Under Licence GPLv3")
+parser.add_argument('-c', '--config', type=str, default=current_dir + '/config', help='Path to the config file or directory')
+parser.add_argument('-d', '--debug', action='store_true', help='Enable debug mode')
+args = parser.parse_args()
+
+config_path = args.config
+current_config = Config(config_path)
+
+# current_config.set('config.logs.log_level', "DEBUG")
+
+if args.debug or os.getenv('DEBUG', 'false').lower() == 'true':
+    current_config.set('config.logs.log_level', 'DEBUG')
+

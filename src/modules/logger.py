@@ -4,6 +4,7 @@ import threading
 from logfmter import Logfmter
 from pythonjsonlogger.json import JsonFormatter
 from .common import bcolors, get_formatted_datetime
+from .config import current_config
 
 
 class CustomFormatter(logging.Formatter):
@@ -13,8 +14,8 @@ class CustomFormatter(logging.Formatter):
     thread_id = threading.get_ident()
     loglvl = record.levelname.upper()
     msg = record.getMessage()
-    msg = msg.replace('UP', f"{bcolors.OKGREEN}UP{bcolors.ENDC}")
-    msg = msg.replace('DOWN', f"{bcolors.RED}DOWN{bcolors.ENDC}")
+    msg = msg.replace(' UP ', f"{bcolors.OKGREEN} UP {bcolors.ENDC}")
+    msg = msg.replace(' DOWN ', f"{bcolors.RED} DOWN {bcolors.ENDC}")
 
     if loglvl == 'DEBUG':
       logcolor = bcolors.GREEN
@@ -34,7 +35,7 @@ class CustomFormatter(logging.Formatter):
     return f"{current_datetime} - [{logcolor}{loglvl}{bcolors.ENDC}] - [{thread_name}-{thread_id}] - {msg}{bcolors.ENDC}"
 
 
-def get_logger(loglevel="INFO", logformat="console"):
+def get_logger(loglevel=current_config.get('config.logs.log_level'), logformat=current_config.get('config.logs.format')):
   logger = logging.getLogger('custom_logger')
   logger.setLevel(getattr(logging, loglevel.upper(), logging.DEBUG))
 
