@@ -58,6 +58,8 @@ def main():
         logging.debug('\n\n' + yaml.dump(current_config.config, default_flow_style=False))
         logging.debug('{:#^80s}'.format(' END '))
 
+    logging.info("Initialisation complete.")
+    logging.info("Starting service health checker...")
     with ThreadPoolExecutor() as executor:
         services = current_config.config["services"]
         if current_config.get('config.logs.log_level').upper() == "DEBUG":

@@ -2,6 +2,11 @@ import requests
 import socket
 import re
 from .common import bcolors, get_formatted_datetime, printdebug
+# from .config import current_config
+# from .logger import get_logger
+
+# logging = get_logger(logformat=current_config.get('config.logs.format'))
+# logging.setLevel(current_config.get('config.logs.log_level').upper())
 
 # Function to check if a service URL returns a 200 HTTP status code
 def check_serviceHTTP(service_endpoint, check_ssl=True, debug=False):
@@ -14,7 +19,7 @@ def check_serviceHTTP(service_endpoint, check_ssl=True, debug=False):
             return True
         else:
             return False
-        
+
     except requests.exceptions.SSLError as e:
         print(f"{current_datetime} - [{bcolors.FAIL}ERROR{bcolors.ENDC}] - SSL Error checking service {service_endpoint}: {e}")
         return False
@@ -25,6 +30,7 @@ def check_serviceHTTP(service_endpoint, check_ssl=True, debug=False):
         else:
             printdebug(f"Error checking service {service_endpoint}: {e}", debug)
         return False
+
 
 def check_serviceTCP(service_endpoint, port, timeout=5, debug=False):
     current_datetime = get_formatted_datetime()
