@@ -59,3 +59,6 @@ def get_logger(loglevel=current_config.get('config.logs.log_level'), logformat=c
 
   logger.addHandler(stdouthandler)
   return logger
+
+logging = get_logger()
+logging.setLevel(current_config.get('config.logs.log_level').upper())
