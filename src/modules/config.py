@@ -117,4 +117,3 @@ current_config = Config(config_path)
 
 if args.debug or os.getenv('DEBUG', 'false').lower() == 'true':
     current_config.set('config.logs.log_level', 'DEBUG')
-
