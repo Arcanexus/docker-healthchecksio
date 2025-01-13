@@ -1,19 +1,13 @@
 import requests
 import socket
 import re
-from .common import bcolors, get_formatted_datetime, printdebug
-# from .config import current_config
-# from .logger import get_logger
-
-# logging = get_logger(logformat=current_config.get('config.logs.format'))
-# logging.setLevel(current_config.get('config.logs.log_level').upper())
+from .logger import logging
 
 # Function to check if a service URL returns a 200 HTTP status code
-def check_serviceHTTP(service_endpoint, check_ssl=True, debug=False):
-    current_datetime = get_formatted_datetime()
+def check_serviceHTTP(service_endpoint, check_ssl=True):
     try:
         response = requests.get(service_endpoint, allow_redirects=True, verify=check_ssl)
-        printdebug(f"HTTP Code {response.status_code} - {response.reason}", debug)
+        logging.debug(f"HTTP Code {response.status_code} - {response.reason}")
         rc_pattern = re.compile(r'^(2\d{2}|401|403)$')
         if rc_pattern.match(str(response.status_code)):
             return True
@@ -21,19 +15,18 @@ def check_serviceHTTP(service_endpoint, check_ssl=True, debug=False):
             return False
 
     except requests.exceptions.SSLError as e:
-        print(f"{current_datetime} - [{bcolors.FAIL}ERROR{bcolors.ENDC}] - SSL Error checking service {service_endpoint}: {e}")
+        logging.error(f"SSL Error checking service {service_endpoint}: {e}")
         return False
 
     except requests.exceptions.RequestException as e:
         if "[Errno 8]" in str(e) or "[Errno 11001]" in str(e) or "[Errno -2]" in str(e):
-            printdebug(f"Fail to resolve {service_endpoint}: {e}", debug)
+            logging.debug(f"Fail to resolve {service_endpoint}: {e}")
         else:
-            printdebug(f"Error checking service {service_endpoint}: {e}", debug)
+            logging.debug(f"Error checking service {service_endpoint}: {e}")
         return False
 
 
-def check_serviceTCP(service_endpoint, port, timeout=5, debug=False):
-    current_datetime = get_formatted_datetime()
+def check_serviceTCP(service_endpoint, port, timeout=5):
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.settimeout(timeout)
@@ -41,8 +34,8 @@ def check_serviceTCP(service_endpoint, port, timeout=5, debug=False):
         sock.close()
         return True
     except socket.timeout:
-        print(f"{current_datetime} - [{bcolors.FAIL}ERROR{bcolors.ENDC}] - Connection timeout to {service_endpoint}:{port} after {timeout} seconds.")
+        logging.error(f"Connection timeout to {service_endpoint}:{port} after {timeout} seconds.")
         return False
     except socket.error as e:
-        print(f"{current_datetime} - [{bcolors.FAIL}ERROR{bcolors.ENDC}] - Connection failed to {service_endpoint}:{port} after {timeout} seconds.")
+        logging.error(f"Connection failed to {service_endpoint}:{port} after {timeout} seconds.")
         return False
