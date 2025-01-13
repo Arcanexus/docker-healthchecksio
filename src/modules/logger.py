@@ -37,7 +37,7 @@ class CustomFormatter(logging.Formatter):
 
 def get_logger(loglevel=current_config.get('config.logs.log_level'), logformat=current_config.get('config.logs.format')):
   logger = logging.getLogger('custom_logger')
-  logger.setLevel(getattr(logging, loglevel.upper(), logging.DEBUG))
+  # logger.setLevel(getattr(logging, loglevel.upper(), logging.DEBUG))
 
   stdouthandler = logging.StreamHandler(sys.stdout)
 
@@ -59,6 +59,7 @@ def get_logger(loglevel=current_config.get('config.logs.log_level'), logformat=c
 
   logger.addHandler(stdouthandler)
   return logger
+
 
 logging = get_logger()
 logging.setLevel(current_config.get('config.logs.log_level').upper())
