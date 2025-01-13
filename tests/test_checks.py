@@ -1,10 +1,5 @@
 # import src.main as main
 import src.modules.checks as checks
-import src.modules.common as common
-
-
-def test_get_formatted_datetime():
-  assert common.get_formatted_datetime()
 
 
 def test_checkHTTPSuccess():

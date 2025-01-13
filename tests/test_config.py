@@ -4,14 +4,13 @@ import os
 
 
 def test_read_config():
-  current_config = config.read_config("src/config/")
+  current_config = config.read_config("src/config/config.yml.sample")
   assert yaml.dump(current_config)
 
 
-# def test_get_config_value():
-#   current_config = config.read_config("src/config/")
-#   value = current_config.get("config.logs.log_level")
-#   assert value is not None
+def test_get_config_value():
+  value = config.current_config.get('config.logs.log_level')
+  assert value is not None
 
 
 def test_config_path_exists():
