@@ -1,7 +1,7 @@
 import src.modules.checks as checks
 import src.modules.common as common
 # import src.modules.config as config
-import yaml
+# import yaml
 
 
 def test_get_formatted_datetime():
