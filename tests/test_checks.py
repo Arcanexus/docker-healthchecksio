@@ -1,5 +1,8 @@
 # import src.main as main
 import src.modules.checks as checks
+from src.modules.config import Config
+
+current_config = Config("src/config/config.yml.sample")
 
 
 def test_checkHTTPSuccess():

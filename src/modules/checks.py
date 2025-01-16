@@ -3,6 +3,7 @@ import socket
 import re
 from .logger import logging
 
+
 # Function to check if a service URL returns a 200 HTTP status code
 def check_serviceHTTP(service_endpoint, check_ssl=True):
     try:
