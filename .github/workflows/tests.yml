@@ -37,5 +37,5 @@ jobs:
         run: |
           pwd
           ls -la
-          pytest -- -c "src/config/config.yml.sample"
+          pytest
 
