@@ -7,7 +7,7 @@ def test_checkHTTPSuccess():
 
 
 def test_checkHTTPFail():
-  res = checks.check_serviceHTTP("https://www.unknownurlfqdn.com")
+  res = checks.check_serviceHTTP("https://www.unknownurlfqdn123.com")
   assert res is False
 
 
@@ -16,5 +16,5 @@ def test_checkTCPSuccess():
 
 
 def test_checkTCPFail():
-  res = checks.check_serviceTCP("www.unknownurlfqdn.com", 10)
+  res = checks.check_serviceTCP("www.unknownurlfqdn123.com", 10)
   assert res is False
