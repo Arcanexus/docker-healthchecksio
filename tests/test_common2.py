@@ -1,4 +1,4 @@
-import modules.common as common
+import src.modules.common as common
 
 
 def test_get_formatted_datetime():
