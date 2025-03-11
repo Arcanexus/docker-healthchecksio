@@ -29,7 +29,6 @@ def monitor_service(item, debug):
         logging.setLevel('DEBUG')
     polling_timer = item.get('check', {}).get('polling_timer', 60)
 
-
     while True:
         if check_type == 'http':
             check_ssl = item.get('check', {}).get('ssl_check', True)
