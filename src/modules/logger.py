@@ -37,8 +37,17 @@ class CustomFormatter(logging.Formatter):
 
 def get_logger():
     logger = logging.getLogger('custom_logger')
-    loglevel = current_config.get('config.logs.log_level')
-    logformat = current_config.get('config.logs.format')
+
+    try:
+        loglevel = current_config.get('config.logs.log_level')
+    except:
+        loglevel = "INFO"
+
+    try:
+        logformat = current_config.get('config.logs.format')
+    except:
+        logformat = "console"
+
     logger.setLevel(getattr(logging, loglevel.upper(), logging.DEBUG))
 
     stdouthandler = logging.StreamHandler(sys.stdout)
