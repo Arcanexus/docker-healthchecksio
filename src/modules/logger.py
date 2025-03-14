@@ -40,11 +40,13 @@ def get_logger():
 
     try:
         loglevel = current_config.get('config.logs.log_level')
+        print(f"Log level: {loglevel}")
     except:
         loglevel = "INFO"
 
     try:
         logformat = current_config.get('config.logs.format')
+        print(f"Log format: {logformat}")
     except:
         logformat = "console"
 
