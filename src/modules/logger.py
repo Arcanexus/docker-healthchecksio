@@ -38,13 +38,17 @@ class CustomFormatter(logging.Formatter):
 def get_logger():
     logger = logging.getLogger('custom_logger')
 
-    loglevel = current_config.get('config.logs.log_level')
-    if loglevel is None:
+    loglevelconf = current_config.get('config.logs.log_level')
+    if loglevelconf is None:
         loglevel = "INFO"
+    else:
+        loglevel = loglevelconf
 
-    logformat = current_config.get('config.logs.format')
-    if logformat is None:
+    logformatconf = current_config.get('config.logs.format')
+    if logformatconf is None:
         logformat = "console"
+    else:
+        logformat = logformatconf
 
     logger.setLevel(getattr(logging, loglevel.upper(), logging.DEBUG))
 
