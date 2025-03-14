@@ -35,9 +35,10 @@ class CustomFormatter(logging.Formatter):
         return f"{current_datetime} - [{logcolor}{loglvl}{bcolors.ENDC}] - [{thread_name}-{thread_id}] - {msg}{bcolors.ENDC}"
 
 
-def get_logger(loglevel='DEBUG', logformat='console'):
+def get_logger():
     logger = logging.getLogger('custom_logger')
-    # loglevelwanted =
+    loglevel = current_config.get('config.logs.log_level')
+    logformat = current_config.get('config.logs.format')
     logger.setLevel(getattr(logging, loglevel.upper(), logging.DEBUG))
 
     stdouthandler = logging.StreamHandler(sys.stdout)
@@ -63,5 +64,5 @@ def get_logger(loglevel='DEBUG', logformat='console'):
     return logger
 
 
-logging = get_logger(loglevel=current_config.get('config.logs.log_level'), logformat=current_config.get('config.logs.format'))
+logging = get_logger()
 logging.setLevel(current_config.get('config.logs.log_level').upper())
