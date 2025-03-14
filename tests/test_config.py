@@ -2,6 +2,7 @@ import src.modules.config as config
 import yaml
 import os
 
+current_config = config.Config("src/config/config.yml.sample")
 
 def test_read_config():
   current_config = config.read_config("src/config/config.yml.sample")
