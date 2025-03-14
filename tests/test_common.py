@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import src.modules.common as common
 
 
@@ -5,6 +7,11 @@ def test_get_formatted_datetime():
   result = common.get_formatted_datetime()
   assert isinstance(result, str)
   assert len(result) == 17  # Format "31-Dec-2023 19:34" is 17 characters long
+
+  # Check if the formatted date is correct
+  now = datetime.now()
+  expected_format = now.strftime("%d-%b-%Y %H:%M")
+  assert result == expected_format
 
 
 def test_to_camel_case():
