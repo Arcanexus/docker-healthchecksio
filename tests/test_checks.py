@@ -1,7 +1,6 @@
-# import src.main as main
-import src.modules.checks as checks
-from src.modules.config import current_config
 import pytest
+import src.modules.checks as checks
+from .test_config import current_config
 
 
 def test_checkHTTPSuccess():
