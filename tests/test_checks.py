@@ -3,9 +3,11 @@ import src.modules.checks as checks
 from src.modules.config import Config
 import pytest
 
+
 @pytest.fixture(scope="module")
 def current_config():
   return Config("src/config/config.yml.sample")
+
 
 def test_checkHTTPSuccess():
   assert checks.check_serviceHTTP("https://www.google.com")
