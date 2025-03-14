@@ -1,7 +1,10 @@
 [tool.pytest.ini_options]
-addopts = "-ra -v --cov=src --cov-report json --cov-report html --cov-report term"
+addopts = "-ra -v --cov=src --cov-report json --cov-report html --cov-report term "
 pythonpath = [
   ".", "src",
+]
+required_plugins = [
+  "pytest-cov==6.0.0"
 ]
 
 [tool.coverage.paths]
