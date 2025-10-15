@@ -17,7 +17,7 @@ RUN pip install -U pip && pip install --no-cache-dir -r requirements.txt
 FROM python:3.14-alpine
 
 # Copy only the necessary files from the build stage
-COPY --from=build /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages
+COPY --from=build /usr/local/lib/python3.14/site-packages /usr/local/lib/python3.13/site-packages
 COPY --from=build /usr/local/bin /usr/local/bin
 
 # Set work directory
