@@ -16,7 +16,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          for workflow in keepalive.yml docker-publish.yml; do
+          for workflow in keepalive.yml docker-publish.yml tests.yml; do
             endpoint="repos/${GITHUB_REPOSITORY}/actions/workflows/${workflow}"
             state=$(gh api "$endpoint" --jq .state)
             case "$state" in
